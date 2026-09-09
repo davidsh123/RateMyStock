@@ -14,7 +14,7 @@ def pull_articles(ticker: str) -> list:
     stock = yfinance.Ticker(ticker)
 
     result = []
-    for article in stock.news[:2]:
+    for article in stock.news[:5]:
         result.append(article["content"]["title"])
 
     return result

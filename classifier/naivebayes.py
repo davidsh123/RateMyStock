@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split,  GridSearchCV
+from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
@@ -16,7 +16,7 @@ class naivebayes:
         """
 
 
-        df = pd.read_csv("classifier/Sentiment_Stock_data.csv", nrows = 2000)
+        df = pd.read_csv("classifier/Sentiment_Stock_data.csv", nrows = 4000)
         df.dropna(subset = ["Sentence", "Sentiment"])
         df = df[["Sentence", "Sentiment"]]
 
@@ -33,7 +33,7 @@ class naivebayes:
                 stop_words="english",
                 ngram_range=(1, 3), # include both single words, bigrams, trigrams (e.g. "net loss narrowed")
             )),
-            ("nb", MultinomialNB()), # multinomial because 
+            ("nb", MultinomialNB()), # multinomial because we are working with discrete counts/frequency
         ])
 
 
@@ -50,8 +50,8 @@ class naivebayes:
 
         result = self.model.predict_proba([sentence])[0]
 
-        return f"""Probability of Bearish/Neutral: {result[0]:.2f}%
-                   Probability of Bullish: {result[1]:.2f}%"""
+        return f"""Probability of Bearish/Neutral: {(100*result[0]):.2f}%
+                   Probability of Bullish: {(100*result[1]):.2f}%"""
     
 
 
