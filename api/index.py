@@ -103,9 +103,9 @@ def analyze():
         if chat:
             try:
                 entry["gemini"] = chat.send_message(
-                    f'Based on the headline: "{headline}", indicate whether this is '
-                    f"bullish or bearish for {ticker}. Give 1-3 short bullet points "
-                    "of reasoning. Keep it succinct.",
+                    f'Headline: "{headline}". In one short sentence, say whether this '
+                    f"is bullish or bearish for {ticker} and why. Plain text only, no "
+                    "markdown, no asterisks, no bullet points — a single plain sentence.",
                     config={"tools": [{"url_context": {}}]},
                 ).text
             except Exception as exc:
@@ -118,8 +118,8 @@ def analyze():
     if chat:
         try:
             overall = chat.send_message(
-                "Based on these headlines, indicate if this stock is a buy, sell, "
-                "or neutral in 1-2 sentences."
+                "Based on these headlines, say in one plain sentence whether this "
+                "stock looks like a buy, sell, or neutral. No markdown, no asterisks."
             ).text
         except Exception as exc:
             overall = f"(Gemini unavailable: {exc})"

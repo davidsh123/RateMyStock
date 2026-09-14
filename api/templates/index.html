@@ -10,10 +10,22 @@
     --panel: #121821;
     --border: #202a37;
     --text: #e7edf3;
-    --muted: #8ea0b3;
+    --muted: #a9b8c7;
     --bull: #2fbf71;
     --bear: #e6584e;
     --accent: #4da3ff;
+    --track: #1c2531;
+  }
+  html[data-theme="light"] {
+    --bg: #f4f6f9;
+    --panel: #ffffff;
+    --border: #dbe2ea;
+    --text: #10161e;
+    --muted: #52626f;
+    --bull: #1f9d5c;
+    --bear: #d13f35;
+    --accent: #1266d1;
+    --track: #e5eaf0;
   }
   * { box-sizing: border-box; }
   body {
@@ -21,11 +33,18 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background: var(--bg);
     color: var(--text);
+    transition: background 0.15s ease, color 0.15s ease;
   }
   .wrap {
     max-width: 720px;
     margin: 0 auto;
     padding: 48px 20px 80px;
+  }
+  .top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
   }
   h1 {
     font-size: 28px;
@@ -35,7 +54,20 @@
     color: var(--muted);
     margin-top: 0;
     margin-bottom: 28px;
+    font-size: 16px;
   }
+  #themeToggle {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  #themeToggle:hover { border-color: var(--accent); }
   form {
     display: flex;
     gap: 10px;
@@ -51,18 +83,18 @@
     text-transform: uppercase;
   }
   input[type="text"]:focus { outline: 2px solid var(--accent); }
-  button {
+  button[type="submit"] {
     padding: 12px 20px;
     border-radius: 8px;
     border: none;
     background: var(--accent);
-    color: #05131f;
+    color: #ffffff;
     font-weight: 600;
     font-size: 15px;
     cursor: pointer;
   }
   button:disabled { opacity: 0.6; cursor: default; }
-  #status { color: var(--muted); margin-top: 14px; min-height: 20px; }
+  #status { color: var(--muted); margin-top: 14px; min-height: 20px; font-size: 15px; }
   #overall {
     margin-top: 24px;
     padding: 14px 16px;
@@ -70,6 +102,8 @@
     background: var(--panel);
     border: 1px solid var(--border);
     display: none;
+    font-size: 16px;
+    line-height: 1.5;
   }
   .card {
     margin-top: 16px;
@@ -78,20 +112,32 @@
     background: var(--panel);
     border: 1px solid var(--border);
   }
-  .headline { font-weight: 600; margin-bottom: 10px; }
-  .bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 13px; }
-  .bar-track { flex: 1; height: 8px; border-radius: 4px; background: #1c2531; overflow: hidden; }
+  .headline { font-weight: 600; margin-bottom: 10px; font-size: 17px; }
+  .bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 14px; }
+  .bar-row span:first-child { width: 110px; flex-shrink: 0; }
+  .bar-row span:last-child { width: 52px; flex-shrink: 0; text-align: right; }
+  .bar-track { flex: 1; height: 8px; border-radius: 4px; background: var(--track); overflow: hidden; }
   .bar-fill { height: 100%; }
   .bear-fill { background: var(--bear); }
   .bull-fill { background: var(--bull); }
-  .gemini { margin-top: 12px; font-size: 14px; color: var(--muted); white-space: pre-wrap; }
-  .gemini strong { color: var(--text); }
+  .gemini {
+    margin-top: 14px;
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--text);
+  }
+  .gemini strong { color: var(--accent); }
 </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>📈 RateMyStock</h1>
-    <p class="sub">Naive Bayes + Gemini sentiment analysis on the latest headlines for a ticker.</p>
+    <div class="top-row">
+      <div>
+        <h1>📈 RateMyStock</h1>
+        <p class="sub">Naive Bayes + Gemini sentiment analysis on the latest headlines for a ticker.</p>
+      </div>
+      <button id="themeToggle" type="button">🌙 Dark</button>
+    </div>
 
     <form id="tickerForm">
       <input type="text" id="ticker" placeholder="e.g. MSFT" maxlength="10" required />
@@ -104,12 +150,37 @@
   </div>
 
 <script>
+  // ---- theme handling ----
+  const root = document.documentElement;
+  const themeToggle = document.getElementById("themeToggle");
+
+  function applyTheme(theme) {
+    root.setAttribute("data-theme", theme);
+    themeToggle.textContent = theme === "light" ? "☀️ Light" : "🌙 Dark";
+    localStorage.setItem("ratemystock-theme", theme);
+  }
+
+  const savedTheme = localStorage.getItem("ratemystock-theme");
+  const prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
+  applyTheme(savedTheme || (prefersLight ? "light" : "dark"));
+
+  themeToggle.addEventListener("click", () => {
+    const current = root.getAttribute("data-theme");
+    applyTheme(current === "light" ? "dark" : "light");
+  });
+
+  // ---- analyze form ----
   const form = document.getElementById("tickerForm");
   const tickerInput = document.getElementById("ticker");
   const statusEl = document.getElementById("status");
   const overallEl = document.getElementById("overall");
   const resultsEl = document.getElementById("results");
   const submitBtn = document.getElementById("submitBtn");
+
+  // Gemini is asked to avoid markdown, but strip any stray ** / * / # just in case.
+  function cleanText(str) {
+    return (str ?? "").replace(/\*\*/g, "").replace(/^[*#]+\s*/gm, "").trim();
+  }
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -134,7 +205,7 @@
 
       if (data.overall) {
         overallEl.style.display = "block";
-        overallEl.innerHTML = `<strong>Overall take:</strong> ${escapeHtml(data.overall)}`;
+        overallEl.innerHTML = `<strong>Overall take:</strong> ${escapeHtml(cleanText(data.overall))}`;
       }
 
       data.results.forEach((r) => {
@@ -143,7 +214,7 @@
         card.innerHTML = `
           <div class="headline">${escapeHtml(r.headline)}</div>
           <div class="bar-row">
-            <span>Bearish</span>
+            <span>Bearish/Neutral</span>
             <div class="bar-track"><div class="bar-fill bear-fill" style="width:${r.naive_bayes.bearish}%"></div></div>
             <span>${r.naive_bayes.bearish}%</span>
           </div>
@@ -152,7 +223,7 @@
             <div class="bar-track"><div class="bar-fill bull-fill" style="width:${r.naive_bayes.bullish}%"></div></div>
             <span>${r.naive_bayes.bullish}%</span>
           </div>
-          <div class="gemini"><strong>Gemini:</strong> ${escapeHtml(r.gemini)}</div>
+          <div class="gemini"><strong>Gemini:</strong> ${escapeHtml(cleanText(r.gemini))}</div>
         `;
         resultsEl.appendChild(card);
       });
