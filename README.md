@@ -1,4 +1,6 @@
 # RateMyStock
+https://rate-my-stock-sigma.vercel.app/
+
 
 ## classifier
 ### naivebayes.ipynb / naivebayes.py
