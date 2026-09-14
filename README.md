@@ -22,11 +22,7 @@ Trained using labelled data from https://www.kaggle.com/datasets/avisheksood/sto
 
 
 ## main.py
-Requirements: 
-- google-genai ("pip3 install google-genai")
-- python-dotenv ("pip3 install python-dotenv")
-
-Performs sentiment analysis based off news headlines for a given ticker.\
+Performs sentiment analysis based off news headlines for a given ticker in the terminal.
 Use the naive bayes model and LLM's intuition to indicate if each article is bearish or bullish\
 with gemini's reasoning. 
 

@@ -73,7 +73,7 @@ if __name__ == "__main__":
     GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
     running = True
 
-    ticker = "AAPL"
+    ticker = "MSFT"
 
 
     summarize(ticker)
