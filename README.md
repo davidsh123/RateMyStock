@@ -18,7 +18,7 @@ This rewards unique words/phrases
 We use multinomial naive bayes because we are working with discrete counts/frequency
 
 \
-Caveat: Results are possibly overfitted to the training data. 
+Caveat: Results tend to predict Bullish
 
 \
 \
