@@ -9,9 +9,12 @@ Requirements:
 - notebook
 - pandas
 - sklearn
-\This file implements a multinomial naive bayes to classify sentences as bullish or bearish
-Sentences are vectorized via term frequency - inverse document frequency vectorizer \
+\
+This file implements a multinomial naive bayes to classify sentences as bullish or bearish
+Sentences are vectorized via term frequency - inverse document frequency vectorizer 
+\
 This rewards unique words/phrases
+\
 We use multinomial naive bayes because we are working with discrete counts/frequency
 
 \
