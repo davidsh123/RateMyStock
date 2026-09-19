@@ -16,17 +16,17 @@ class naivebayes:
         """
 
 
-        df = pd.read_csv("classifier/Sentiment_Stock_data.csv", nrows = 4000)
-        df.dropna(subset = ["Sentence", "Sentiment"])
-        df = df[["Sentence", "Sentiment"]]
+        df = pd.read_csv("classifier/sentiment_clean.csv")
+        df.dropna(subset = ["text", "label"])
+        df = df[["text", "label"]]
 
-        X = df["Sentence"]
-        Y = df["Sentiment"]
+        X = df["text"]
+        Y = df["label"]
 
         X_train, X_test, Y_train, Y_test = train_test_split(X, 
                                                             Y,
                                                             test_size=0.2,      
-                                                            random_state=2)
+                                                            random_state=1)
 
         pipeline = Pipeline([
             ("tfidf", TfidfVectorizer(

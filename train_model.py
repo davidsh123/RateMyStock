@@ -4,7 +4,7 @@ fitted sklearn Pipeline to model/sentiment_model.pkl so the Vercel
 serverless function can load it instantly instead of retraining on
 every cold start.
 
-Run this locally whenever Sentiment_Stock_data.csv changes:
+Run this locally whenever the data changes:
 
     python3 train_model.py
 """
@@ -19,20 +19,20 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import classification_report, confusion_matrix
 
 BASE_DIR = Path(__file__).resolve().parent
-DATA_PATH = BASE_DIR / "training" / "Sentiment_Stock_data.csv"
+DATA_PATH = BASE_DIR / "classifier" / "sentiment_clean.csv"
 MODEL_PATH = BASE_DIR / "model" / "sentiment_model.pkl"
 
 
 def main() -> None:
     df = pd.read_csv(DATA_PATH, nrows=4000)
-    df = df.dropna(subset=["Sentence", "Sentiment"])
-    df = df[["Sentence", "Sentiment"]]
+    df = df.dropna(subset=["text", "label"])
+    df = df[["text", "label"]]
 
-    X = df["Sentence"]
-    Y = df["Sentiment"]
+    X = df["text"]
+    Y = df["label"]
 
     X_train, X_test, Y_train, Y_test = train_test_split(
-        X, Y, test_size=0.2, random_state=2
+        X, Y, test_size=0.2, random_state=1
     )
 
     pipeline = Pipeline(
